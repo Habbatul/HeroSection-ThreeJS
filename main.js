@@ -348,12 +348,12 @@ function configureMesh() {
     //mengatur rotasi 90 derajat
     mesh.rotation.x=Math.PI/2;
     // Mengatur posisi mesh
-    mesh.position.x = 0.2;
-    mesh.position.y = -1.2;
+    mesh.position.x = 0.4;
+    mesh.position.y = -1.4;
     mesh.position.z = 2;
 
     // Mengatur skala mesh
-    mesh.scale.set(8.4, 1, 8.4);
+    mesh.scale.set(8.2, 1, 10);
 
     // Mengatur material pada mesh
     const material = mesh.material;
