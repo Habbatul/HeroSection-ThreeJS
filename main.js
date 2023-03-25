@@ -1,10 +1,12 @@
 //import './style.css';
 import * as THREE from 'three';
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 
  // Setup
- const canvas = document.getElementById('canvas');
+var canvas = document.getElementById('canvas');
  var scene = new THREE.Scene();
- var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+ var camera = new THREE.PerspectiveCamera(75, canvas.offsetWidth / canvas.offsetHeight, 0.1, 1000);
  const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
 
  const origWidth = window.innerWidth - 80;
@@ -39,7 +41,7 @@ var torus = new THREE.Mesh(geometry, material);
 scene.add(torus);
 
 //torus 2
-var geometry2 = new THREE.TorusGeometry(12, 0.7, 16, 20);
+var geometry2 = new THREE.TorusGeometry(12, 0.7, 16, 30);
 var material2 = new THREE.MeshStandardMaterial({ color: 0x681E4E });
 var torus2 = new THREE.Mesh(geometry2, material2);
 
@@ -77,10 +79,71 @@ Array(200).fill().forEach(addStar);
 // Avatar
 
 var hanTexture = new THREE.TextureLoader().load('han.png');
-var han = new THREE.Mesh(new THREE.PlaneGeometry(3, 3), new THREE.MeshBasicMaterial({ map: hanTexture }));
+var han = new THREE.Mesh(new THREE.BoxGeometry( 2.5, 2.5, 2.5 ), new THREE.MeshBasicMaterial({ map: hanTexture }));
+han.material.opacity =0.5;
+han.material.opacity =0.5;
 scene.add(han);
 
-//ketika object han di hover
+//text
+const loader = new FontLoader();
+
+loader.load('node_modules/three/examples/fonts/helvetiker_bold.typeface.json', function(font) {
+
+  const geometry = new TextGeometry('Welcome to', {
+    font: font,
+    size: 1, // Ukuran font baru yang lebih kecil
+    height: 0.5,
+    curveSegments: 12,
+    bevelEnabled: true,
+    bevelThickness: 0.2,
+    bevelSize: 0.1,
+    bevelOffset: 0,
+    bevelSegments: 5,
+  });
+
+  const geometry2 = new TextGeometry('Hq.Han Website', {
+    font: font,
+    size: 1, // Ukuran font baru yang lebih kecil
+    height: 0.5,
+    curveSegments: 12,
+    bevelEnabled: true,
+    bevelThickness: 0.2,
+    bevelSize: 0.1,
+    bevelOffset: 0,
+    bevelSegments: 5,
+  });
+
+
+
+
+ const material = new THREE.MeshPhongMaterial({ 
+  color: 0x3498db, // Ubah menjadi warna biru
+  specular: 0x555555, 
+  shininess: 5, // Kurangi nilai shininess agar tidak terlalu mengkilap
+  roughness: 1 // Tambahkan properti roughness untuk membuat permukaan tampak kasar
+});
+  const textMesh = new THREE.Mesh(geometry, material);
+
+  const material2 = new THREE.MeshPhongMaterial({ 
+    color: 0x8e44ad, // Ubah menjadi warna ungu
+    specular: 0x555555, 
+    shininess: 5, // Kurangi nilai shininess agar tidak terlalu mengkilap
+    roughness: 1 // Tambahkan properti roughness untuk membuat permukaan tampak kasar
+  });
+  
+  const textMesh2 = new THREE.Mesh(geometry2, material2);
+
+
+  // Set the position of the text mesh to x=0, y=0, z=0
+  textMesh.position.set(-3.8, 1, 18);
+  textMesh2.position.set(-5.2, -0.9, 18);
+  scene.add(textMesh);
+  scene.add(textMesh2);
+
+});
+
+
+
 
 
 
@@ -143,7 +206,7 @@ function startRotationAnimation() {
     elapsedTime += 0.05;
 
 
-    han.rotation.z += 0.1;
+    han.rotation.x += 0.1;
     camera.position.z +=0.2;
     
 
@@ -165,7 +228,7 @@ function startRotationAnimation() {
 
                 function rotateBack() {
                   elapsedTime += 0.05;
-                  han.rotation.z -= 0.1;
+                  han.rotation.x -= 0.1;
                   camera.position.z -=0.2;
 
                   if (elapsedTime < 5) {
@@ -192,89 +255,109 @@ function startRotationAnimation() {
 //inisialisasi secara realtime
 function myFunction(x) {
   if (x.matches) { // If media query matches
-
-    const Width = window.innerWidth - 20;
-    const Height = window.innerHeight - 500;
-    camera.aspect = Width / Height;
-    camera.updateProjectionMatrix();
-
-     // Handle window resizing
- window.addEventListener('resize', function(){
-     const width = window.innerWidth - 20;
-     const height = window.innerHeight - 500;
-
-     renderer.setSize(width, height);
-
-     camera.aspect = width / height;
-     camera.updateProjectionMatrix();
-
-     // Set renderer size to original size if resized to larger size
-     if (width >= origWidth && height >= origHeight) {
-         renderer.setSize(origWidth, origHeight);
-
-         camera.aspect = origWidth / origHeight;
-         camera.updateProjectionMatrix();
-     }
- });
     const width = window.innerWidth - 20;
     const height = window.innerHeight - 500;
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+
+    // Handle window resizing
+    window.addEventListener('resize', function() {
+      const width = window.innerWidth - 20;
+      const height = window.innerHeight - 500;
+
+      renderer.setSize(width, height);
+
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+
+      // Set renderer size to original size if resized to larger size
+      if (width >= origWidth && height >= origHeight) {
+        renderer.setSize(origWidth, origHeight);
+        camera.aspect = origWidth / origHeight;
+        camera.updateProjectionMatrix();
+      }
+    });
+
+    renderer.setSize(width, height);
+
+    han.position.z = 1;
+    han.position.x = 0;
+    han.position.y = -0.5;
+
+    torus.position.z = 1;
+    torus.position.x = 0;
+    torus.position.y = -0.5;
+
+    torus2.position.z = 1;
+    torus2.position.x = 0;
+    torus2.position.y = -0.5;
+  } 
+
+  else if(!(x.matches)) {
+    camera.aspect = origWidth / origHeight;
+    camera.updateProjectionMatrix();
+
+    // Handle window resizing
+    window.addEventListener('resize', function() {
+      const width = window.innerWidth - 80;
+      const height = window.innerHeight - 220;
+
+      renderer.setSize(width, height);
+
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    });
+
+    renderer.setSize(origWidth, origHeight);
+
+    han.position.z = 0;
+    han.position.x = 0;
+    han.position.y = -0.5;
+
+    torus.position.z = 0;
+    torus.position.x = 0;
+    torus.position.y = -0.5;
+
+    torus2.position.z = 0;
+    torus2.position.x = 0;
+    torus2.position.y = -0.5;
+  }
+}
+var x = window.matchMedia("(max-width: 1264px)");
+myFunction(x);
+x.addListener(myFunction);
+
+
+function IPHONEX(x) {
+  if (h.matches && w.matches) { 
+    const Width = window.innerWidth - 20;
+    const Height = window.innerHeight - 450;
+    camera.aspect = Width / Height;
+    camera.updateProjectionMatrix();
+    const width = window.innerWidth - 20;
+    const height = window.innerHeight - 450;
 
     renderer.setSize(width, height);
     // renderer.setSize(100,200);
     han.position.z = 1;
     han.position.x =0;
-    han.position.y = 0;
+    han.position.y = -0.5;
     
     torus.position.z = 1;
     torus.position.x = 0;
-    torus.position.y = 0;
+    torus.position.y = -0.5;
     
     torus2.position.z = 1;
     torus2.position.x = 0;
-    torus2.position.y = 0;
-
-  } 
-
-else if(!(x.matches)) {
-  camera.aspect = origWidth / origHeight;
-  camera.updateProjectionMatrix();
- // Handle window resizing
- window.addEventListener('resize', function(){
-  const width = window.innerWidth - 80;
-  const height = window.innerHeight - 220;
-
-  renderer.setSize(width, height);
-
-  camera.aspect = width / height;
-  camera.updateProjectionMatrix();
-
-  // Set renderer size to original size if resized to larger size
-  if (width <= origWidth && height <= origHeight) {
-      renderer.setSize(origWidth, origHeight);
-
-      camera.aspect = origWidth / origHeight;
-      camera.updateProjectionMatrix();
+    torus2.position.y = -0.5;
   }
-});
-  
-  han.position.z =0;
-  han.position.x = 0;
-  han.position.y =0;
-  
-  torus.position.z = 0;
-  torus.position.x = 0;
-  han.position.y =0;
-  
-  torus2.position.z = 0;
-  torus2.position.x = 0;
-  han.position.y =0;
-  }
 }
-var x = window.matchMedia("(max-width: 991px)");
-myFunction(x);
+
+var w = window.matchMedia("(max-width: 360px)");
+var h = window.matchMedia("(max-height: 780px)");
+
+IPHONEX(x);
 x.addListener(myFunction);
-
-
 
 //buat durasi
 let j=0;
@@ -296,16 +379,23 @@ function animate() {
   
     // Check if intersected object is han mesh
     if (intersects.length > 0 && intersects[0].object === han) {
+      canvas.style.cursor = "pointer";
       // Start rotation animation
       han.material.color.set(hoverColor);
-      han.position.z +=0.01;
+      han.rotation.y +=0.01;
+      han.rotation.z +=0.01;
       cek+=0.5;
     }else{
+      canvas.style.cursor = "auto";
       if(cek != 0){
         cek-=0.5;
-        han.position.z -= 0.01;
-        if(han.position.z < 0){
-          han.position.z = 1;
+        han.rotation.y -= 0.01;
+        han.rotation.z -=0.01;
+        if(han.rotation.y < 0){
+          han.rotation.y = 0;
+        }
+        if(han.rotation.z < 0){
+          han.rotation.z = 0;
         }
         
       }
