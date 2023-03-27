@@ -17,6 +17,9 @@ var canvas = document.getElementById('canvas');
 
  // Set up container
  const container = document.createElement('div');
+ container.style.display = 'flex';
+ container.style.justifyContent = 'center';
+ container.style.alignItems = 'center';
  canvas.parentNode.insertBefore(container, canvas);
  container.appendChild(canvas);
  container.appendChild(renderer.domElement);
