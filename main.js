@@ -6,7 +6,7 @@ import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
  // Setup
 var canvas = document.getElementById('canvas');
  var scene = new THREE.Scene();
- var camera = new THREE.PerspectiveCamera(75, canvas.offsetWidth / canvas.offsetHeight, 0.1, 1000);
+ var camera = new THREE.PerspectiveCamera(75, canvas.window.innerHeight / window.innerWidth, 0.1, 1000);
  const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
 
  const origWidth = window.innerWidth - 80;
@@ -17,6 +17,9 @@ var canvas = document.getElementById('canvas');
 
  // Set up container
  const container = document.createElement('div');
+ container.style.display = 'flex';
+ container.style.justifyContent = 'center';
+ container.style.alignItems = 'center';
  canvas.parentNode.insertBefore(container, canvas);
  container.appendChild(canvas);
  container.appendChild(renderer.domElement);
