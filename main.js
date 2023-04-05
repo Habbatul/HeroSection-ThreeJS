@@ -320,7 +320,7 @@ card1.rotation.z = -20.42;
 function myFunction(x) {
   if (x1.matches) { // If media query matches
     const width = window.innerWidth * 0.95;
-    const height = window.innerHeight * 0.33;
+    const height = window.innerHeight * 0.3;
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
     renderer.setSize(width, height);
@@ -435,24 +435,34 @@ function animate() {
 //animasi yang dilakukan 
   requestAnimationFrame(animate);
 
-  const width = canvas.clientWidth;
-  const height = canvas.clientHeight;
-  
   card1.position.copy(camera.position);
   card1.position.z -= 10 * (scene.scale.z || 1);
-  console.log(width)
-  if (width >= 1024) {
-    card1.position.x = -15;
+  card1.position.y=0;
+  const canvasWidth = canvas.clientWidth;
+const canvasHeight = canvas.clientHeight;
 
-  } else if (width >= 768) {
-    card1.position.x = -width / 2 + 30;
-  } else if (width >= 480) {
-    card1.position.x = -width / 2 + 20;
+// Menentukan posisi x card1
+if((canvasWidth / canvasHeight >= 2.4))
+  card1.position.x = -18;
+else if ((canvasWidth / canvasHeight >= 2.2)&&(canvasWidth / canvasHeight <= 2.4)) {
+  // Rasio layar lebar (16:9)
+  card1.position.x = -16.5;
+} else if((canvasWidth / canvasHeight < 2.2)&&(canvasWidth / canvasHeight > 2.1)) {
+  // Rasio layar tinggi (9:16)
+  card1.position.x = -16;
+}else if((canvasWidth / canvasHeight <= 2.1)&&(canvasWidth / canvasHeight > 1.9)) {
+  // Rasio layar tinggi (9:16)
+  card1.position.x = -14.5;
+}else if((canvasWidth / canvasHeight <= 1.9)&&(canvasWidth / canvasHeight > 1.78)) {
+  // Rasio layar tinggi (9:16)
+  card1.position.x = -13;
+}else if((canvasWidth / canvasHeight <= 1.78) && (canvasWidth / canvasHeight > 1.45)) {
+  // Rasio layar tinggi (9:16)
+  card1.position.x = -11.4;
+} else {
+  card1.position.x = -10;
+}
 
-  } else {
-    card1.position.x = -width / 2 + 10;
-
-  }
   //disini adalah logic untuk hover dari han
     // Update raycaster
     raycaster.setFromCamera(mouse, camera);
