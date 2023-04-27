@@ -60,15 +60,6 @@ scene.add(pointLight, ambientLight);
 
 
 
-
-
-
-
-
-
-
-
-
 function addStar() {
   var geometry = new THREE.SphereGeometry(0.25, 24, 24);
   var material = new THREE.MeshStandardMaterial({ color: 0xffffff});
@@ -249,7 +240,10 @@ function startRotationAnimation() {
     
 
     if (elapsedTime < 5 && isAnimating) {
-      requestAnimationFrame(rotate);
+      //melakukan animasi untuk rotasi disini setTimeout berguna untuk melakukan 80 fps agar membatasi fps di semua device
+      setTimeout( function() {
+        requestAnimationFrame(rotate);
+      }, 1000/80 );
       
     } 
     else if (elapsedTime >= 3 && isAnimating) {
@@ -260,7 +254,11 @@ function startRotationAnimation() {
               berhentiSejenak +=0.05;
         
               if (berhentiSejenak < 5) {
-                requestAnimationFrame(berhenti);
+                //melakukan animasi untuk berhenti sejenak disini setTimeout berguna untuk melakukan 80 fps agar membatasi fps di semua device
+                setTimeout( function() {
+                  requestAnimationFrame(berhenti);
+                }, 1000/80 );
+
               } 
               else {
 
@@ -271,7 +269,10 @@ function startRotationAnimation() {
                   card.material.opacity +=0.2;
 
                   if (elapsedTime < 5) {
-                    requestAnimationFrame(rotateBack);
+                    //melakukan animasi untuk rotasi ke asal disini setTimeout berguna untuk melakukan 80 fps agar membatasi fps di semua device
+                    setTimeout( function() {
+                      requestAnimationFrame(rotateBack);
+                    }, 1000/80 );
                   } else {
                     isAnimating = true;
                     elapsedTime = 0;
@@ -432,8 +433,10 @@ let k=0;
 
 function animate() {
 
-//animasi yang dilakukan 
-  requestAnimationFrame(animate);
+//animasi yang dilakukan,, disini setTimeout berguna untuk melakukan 80 fps agar membatasi fps di semua device
+setTimeout( function() {
+  requestAnimationFrame( animate );
+}, 1000/80 );
 
   card1.position.copy(camera.position);
   card1.position.z -= 10 * (scene.scale.z || 1);
