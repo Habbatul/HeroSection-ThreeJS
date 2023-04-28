@@ -2,7 +2,8 @@
 import * as THREE from 'three';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
-// Setup
+import * as TWEEN from '@tweenjs/tween.js';
+
 const canvas = document.getElementById('canvas');
 const container = document.createElement('div');
 container.style.display = 'flex';
@@ -169,6 +170,7 @@ loader.load('helvetiker_bold.typeface.json', function(font) {
 
 
 
+
  //buat raycaster
  const raycaster = new THREE.Raycaster();
  const mouse = new THREE.Vector2();
@@ -234,7 +236,7 @@ function startRotationAnimation() {
     elapsedTime += 0.05;
 
 
-    han.rotation.x += 0.1;
+    han.rotation.x += 0.03;
     camera.position.z +=0.2;
     card.material.opacity -=0.2;
     
@@ -264,7 +266,7 @@ function startRotationAnimation() {
 
                 function rotateBack() {
                   elapsedTime += 0.05;
-                  han.rotation.x -= 0.1;
+                  han.rotation.x -= 0.03;
                   camera.position.z -=0.2;
                   card.material.opacity +=0.2;
 
@@ -326,7 +328,7 @@ function myFunction(x) {
     camera.updateProjectionMatrix();
     renderer.setSize(width, height);
 
-    han.position.z = 0;
+    han.position.z = -0.2;
     han.position.x = 0;
     han.position.y = -0.5;
 
@@ -349,7 +351,7 @@ function myFunction(x) {
     camera.updateProjectionMatrix();
     renderer.setSize(width, height);
 
-    han.position.z = 0;
+    han.position.z = -0.2;
     han.position.x = 0;
     han.position.y = -0.5;
 
@@ -374,7 +376,7 @@ function myFunction(x) {
     camera.updateProjectionMatrix();
     renderer.setSize(width, height);
 
-    han.position.z = 0;
+    han.position.z = -0.2;
     han.position.x = 0;
     han.position.y = -0.5;
 
@@ -397,7 +399,7 @@ function myFunction(x) {
     // Handle window resizing
     renderer.setSize(origWidth, origHeight);
 
-    han.position.z = 0;
+    han.position.z = -0.2;
     han.position.x = 0;
     han.position.y = -0.5;
 
@@ -427,6 +429,8 @@ let cek=0;
 
 let k=0;
 
+var kondisiHanMuter=false;
+
 
 
 // Animation Loop
@@ -437,6 +441,10 @@ function animate() {
 setTimeout( function() {
   requestAnimationFrame( animate );
 }, 1000/80 );
+
+//untuk animasi tween agar gerakan perlahan smooth, lembut banget kek anu
+TWEEN.update();
+
 
   card1.position.copy(camera.position);
   card1.position.z -= 10 * (scene.scale.z || 1);
@@ -475,6 +483,7 @@ else if ((canvasWidth / canvasHeight >= 2.2)&&(canvasWidth / canvasHeight <= 2.4
   
     // Check if intersected object is han mesh
     if (intersects.length > 0 && intersects[0].object === han) {
+      kondisiHanMuter = true;
       canvas.style.cursor = "pointer";
       // Start rotation animation
       han.material.color.set(hoverColor);
@@ -485,16 +494,21 @@ else if ((canvasWidth / canvasHeight >= 2.2)&&(canvasWidth / canvasHeight <= 2.4
       canvas.style.cursor = "auto";
       if(cek != 0){
         cek-=0.5;
-        han.rotation.y -= 0.01;
+        han.rotation.y -=0.01;
         han.rotation.z -=0.01;
-        if(han.rotation.y < 0){
-          han.rotation.y = 0;
-        }
-        if(han.rotation.z < 0){
-          han.rotation.z = 0;
-        }
-        
       }
+
+      if(cek<=0 || cek>=500){
+        var tweenY= new TWEEN.Tween(han.rotation)
+        .to({ z: 0, y:0 }, 500) // durasi animasi 500 ms
+        .easing(TWEEN.Easing.Quadratic.Out) // jenis animasi
+        .onComplete(function() {
+          kondisiHanMuter = false;
+          cek=0;
+        })
+        .start(); // memulai animasi
+      }
+
       han.material.color.set(originalColor);
     }
    
@@ -522,9 +536,34 @@ else if ((canvasWidth / canvasHeight >= 2.2)&&(canvasWidth / canvasHeight <= 2.4
   if(k==200)
     k=0;
 
+    var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+    vector.unproject(camera);
+    var direction = vector.sub(camera.position).normalize();
+
+    // menghitung rotasi objek berdasarkan posisi mouse
+    var angleX = Math.atan2(-direction.y, -direction.z);
+    var angleY = Math.atan2(direction.x, -direction.z);
+
+
+    if (animasiberjalan == false && kondisiHanMuter == false) {
+      // membuat animasi rotasi menggunakan Tween.js
+      var tweenX = new TWEEN.Tween(han.rotation)
+        .to({ x: angleX }, 500) // durasi animasi 500 ms
+        .easing(TWEEN.Easing.Quadratic.Out) // jenis animasi
+        .start(); // memulai animasi
+
+      var tweenY = new TWEEN.Tween(han.rotation)
+        .to({ y: angleY }, 500) // durasi animasi 500 ms
+        .easing(TWEEN.Easing.Quadratic.Out) // jenis animasi
+        .start(); // memulai animasi
+    }
+
+
   // controls.update();
   renderer.render(scene, camera)
 }
+
+
 
 animate();
 
