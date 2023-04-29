@@ -558,7 +558,6 @@ else if ((canvasWidth / canvasHeight >= 2.2)&&(canvasWidth / canvasHeight <= 2.4
         .start(); // memulai animasi
     }
 
-
   // controls.update();
   renderer.render(scene, camera)
 }
