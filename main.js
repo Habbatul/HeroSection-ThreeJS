@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
-// import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import * as TWEEN from '@tweenjs/tween.js';
 import {  SelectiveBloomEffect, Selection, EffectComposer, EffectPass, RenderPass } from "postprocessing";
 // Setup
@@ -302,25 +302,69 @@ var han = new THREE.Mesh(geometryHan, materialHan);
 scene.add(han);
 
 
-//card
-//nametag
-var cardText = new THREE.TextureLoader().load('card.png');
-var AlphaText = new THREE.TextureLoader().load('card.png');
-var cardMaterial = new THREE.MeshBasicMaterial({
-    map: cardText,
-    alphaMap:AlphaText,
-    transparent: true,
-    opacity: 4,
-});
+// //card
+// //nametag
+// var cardText = new THREE.TextureLoader().load('card.png');
+// var AlphaText = new THREE.TextureLoader().load('card.png');
+// var cardMaterial = new THREE.MeshBasicMaterial({
+//     map: cardText,
+//     alphaMap:AlphaText,
+//     transparent: true,
+//     opacity: 4,
+// });
 
-var card = new THREE.Mesh(new THREE.PlaneGeometry(3, 3.3), cardMaterial);
-
-
-// han.material.opacity =-1;
-// han.material.opacity =-1;
-scene.add(card);
+// var card = new THREE.Mesh(new THREE.PlaneGeometry(3, 3.3), cardMaterial);
 
 
+// // han.material.opacity =-1;
+// // han.material.opacity =-1;
+// scene.add(card);
+
+//coba gltf loader untuk card
+
+var mesh;
+const loader1 = new GLTFLoader();
+loader1.load( 'tulisan.gltf', function ( gltf ) {
+
+  // menambahkan model ke scene
+  scene.add( gltf.scene );
+
+  // mengatur rotasi mesh setelah model dimuat
+  mesh = gltf.scene.getObjectByName( 'Curve' );
+
+  // Memanggil fungsi untuk melakukan konfigurasi
+  configureMesh();
+}, undefined, function ( error ) {
+
+  console.error( error );
+
+} );
+
+//konfigurasi gltf model
+
+// Di luar fungsi loader
+function configureMesh() {
+  if (mesh) {
+    //mengatur rotasi 90 derajat
+    mesh.rotation.x=Math.PI/2;
+    // Mengatur posisi mesh
+    mesh.position.x = 0.2;
+    mesh.position.y = -1.2;
+    mesh.position.z = 2;
+
+    // Mengatur skala mesh
+    mesh.scale.set(8.4, 1, 8.4);
+
+    // Mengatur material pada mesh
+    const material = mesh.material;
+    material.antialias = true;
+    material.transparent = true;
+    material.opacity = 0;
+    
+    //animation
+
+  }
+}
 
 
 
@@ -404,14 +448,14 @@ loader.load('helvetiker_bold.typeface.json', function(font) {
 
 
 //halaman loading content
-window.addEventListener('DOMContentLoaded', loading, false);
+window.addEventListener('readystatechange', loading, false);
 
 //selesai loading 
 window.addEventListener('load', loadingDone, false);
 
 function loading(){
-  camera.layers.disable(1);
-  camera.layers.enable(0);
+  camera.layers.disable(0);
+  camera.layers.enable(1);
 }
 function loadingDone(){
   camera.layers.disable(1);
@@ -487,10 +531,17 @@ function startRotationAnimation() {
   let berhentiSejenak =0;
   let isAnimating = true;
 
-    var mat1 = new TWEEN.Tween(card.material)
-    .to({ opacity: 0 }, 500) // durasi animasi 500 ms
-    .easing(TWEEN.Easing.Quadratic.Out) // jenis animasi
-    .start(); // memulai animasi
+    // var mat1 = new TWEEN.Tween(card.material)
+    // .to({ opacity: 0 }, 500) // durasi animasi 500 ms
+    // .easing(TWEEN.Easing.Quadratic.Out) // jenis animasi
+    // .start(); // memulai animasi
+
+    if (mesh) {
+      var mat1 = new TWEEN.Tween(mesh.material)
+      .to({ opacity: 0 }, 500) // durasi animasi 500 ms
+      .easing(TWEEN.Easing.Quadratic.Out) // jenis animasi
+      .start(); // memulai animasi
+    }
 
   function rotate() {
     elapsedTime += 0.05;
@@ -592,9 +643,9 @@ function myFunction(x) {
     han.position.x = 0;
     han.position.y = -0.5;
 
-    card.position.z = 2;
-    card.position.x = 1.8;
-    card.position.y = -0.1;
+    // card.position.z = 2;
+    // card.position.x = 1.8;
+    // card.position.y = -0.1;
 
     torus.position.z = 0;
     torus.position.x = 0;
@@ -615,9 +666,9 @@ function myFunction(x) {
     han.position.x = 0;
     han.position.y = -0.5;
 
-    card.position.z = 2;
-    card.position.x = 1.8;
-    card.position.y = -0.1;
+    // card.position.z = 2;
+    // card.position.x = 1.8;
+    // card.position.y = -0.1;
 
     torus.position.z = 0;
     torus.position.x = 0;
@@ -640,9 +691,9 @@ function myFunction(x) {
     han.position.x = 0;
     han.position.y = -0.5;
 
-    card.position.z = 2;
-    card.position.x = 1.8;
-    card.position.y = -0.1;
+    // card.position.z = 2;
+    // card.position.x = 1.8;
+    // card.position.y = -0.1;
 
     torus.position.z = 0;
     torus.position.x = 0;
@@ -663,9 +714,9 @@ function myFunction(x) {
     han.position.x = 0;
     han.position.y = -0.5;
 
-    card.position.z = 2;
-    card.position.x = 1.8;
-    card.position.y = -0.1;
+    // card.position.z = 2;
+    // card.position.x = 1.8;
+    // card.position.y = -0.1;
 
     torus.position.z = 0;
     torus.position.x = 0;
@@ -826,16 +877,30 @@ else if ((canvasWidth / canvasHeight >= 2.2)&&(canvasWidth / canvasHeight <= 2.4
 if(animasiberjalan==false){
 k++;
   if(k<=100){
-      var mat1 = new TWEEN.Tween(card.material)
-      .to({ opacity: 1 }, 500) // durasi animasi 500 ms
-      .easing(TWEEN.Easing.Quadratic.Out) // jenis animasi
-      .start(); // memulai animasi
+      // var mat1 = new TWEEN.Tween(card.material)
+      // .to({ opacity: 1 }, 500) // durasi animasi 500 ms
+      // .easing(TWEEN.Easing.Quadratic.Out) // jenis animasi
+      // .start(); // memulai animasi
+
+      if (mesh) {
+        var mat2 = new TWEEN.Tween(mesh.material)
+        .to({ opacity: 1 }, 500) // durasi animasi 500 ms
+        .easing(TWEEN.Easing.Quadratic.Out) // jenis animasi
+        .start(); // memulai animasi
+        }
   }
   else{
-    var mat2 = new TWEEN.Tween(card.material)
-    .to({ opacity: 0 }, 300) // durasi animasi 500 ms
-    .easing(TWEEN.Easing.Quadratic.Out) // jenis animasi
-    .start(); // memulai animasi
+    // var mat2 = new TWEEN.Tween(card.material)
+    // .to({ opacity: 0 }, 300) // durasi animasi 500 ms
+    // .easing(TWEEN.Easing.Quadratic.Out) // jenis animasi
+    // .start(); // memulai animasi
+
+    if (mesh) {
+      var mat2 = new TWEEN.Tween(mesh.material)
+      .to({ opacity: 0 }, 300) // durasi animasi 500 ms
+      .easing(TWEEN.Easing.Quadratic.Out) // jenis animasi
+      .start(); // memulai animasi
+      }
   }
   if(k>=200)
     k=0;
