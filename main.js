@@ -2,8 +2,10 @@
 import * as THREE from 'three';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
+// import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import * as TWEEN from '@tweenjs/tween.js';
-
+import {  SelectiveBloomEffect, Selection, EffectComposer, EffectPass, RenderPass } from "postprocessing";
+// Setup
 const canvas = document.getElementById('canvas');
 const container = document.createElement('div');
 container.style.display = 'flex';
@@ -15,55 +17,171 @@ canvas.parentNode.insertBefore(container, canvas);
 container.appendChild(canvas);
 
 
-
-const scene = new THREE.Scene();
+var scene2 = new THREE.Scene();
+var scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ canvas: canvas });
+const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias:true, powerPreference:"high-performance" });
+renderer.antialias=true;
 
 const origWidth = window.innerWidth * 0.9;
 const origHeight = window.innerHeight * 0.8;
 
+// renderer.setClearColor(0x333333);
+renderer.setClearColor(0x000000);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(origWidth, origHeight);
 camera.position.set(0, 0, 5);
 
 
- 
+ //terapkan library postprocessing
+ const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
 
- 
+//tadinya pakek bloomEffect tapi karena kita akan menambahkan lampu, avatar dan juga bintang maka memakai selective
+const bloomEffect = new SelectiveBloomEffect(scene,camera,{
+  mipmapBlur:true,
+  radius:0.6,
+  intensity:3.4,
+  luminanceSmoothing:0,
+  luminanceThreshold:0.3
+});
+
+
+composer.addPass(new EffectPass(camera, bloomEffect));
+
+
+//gunakan class Selection dari postprocessing untuk memilih objek
+var objekDipilih = new Selection();
+
+bloomEffect.selection = objekDipilih;
 
 
 // Torus
 
 var geometry = new THREE.TorusGeometry(10, 0.7, 16, 4);
-var material = new THREE.MeshStandardMaterial({ color: 0x005566, wireframe : true });
+var material = new THREE.MeshStandardMaterial({ 
+  color: 0x005566, 
+  wireframe : true, 
+  metalness: 0.4,
+  roughness: 0,
+});
 var torus = new THREE.Mesh(geometry, material);
 
 scene.add(torus);
 
 //torus 2
 var geometry2 = new THREE.TorusGeometry(12, 0.7, 16, 30);
-var material2 = new THREE.MeshStandardMaterial({ color: 0x006655 });
+var material2 = new THREE.MeshStandardMaterial({ 
+  color: 0x006655,
+  metalness: 0.5,
+  reflectivity:0.6,
+  roughness: 0
+ });
 var torus2 = new THREE.Mesh(geometry2, material2);
 
 scene.add(torus2);
 
 // Lights
+// Add directional lights
+// var directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.1);
+// directionalLight1.position.set(2, 0, 1);
 
-var pointLight = new THREE.PointLight(0xCCCCCC);
-pointLight.position.set(0, 0, 0);
+// var directionalLight2 = new THREE.DirectionalLight(0xffffff,  0.1);
+// directionalLight2.position.set(-2, 0, 1);
 
-var pointLight = new THREE.PointLight(0xCCCCCC);
-pointLight.position.set(0, 0, 50);
-
-var ambientLight = new THREE.AmbientLight(0x606060);
-scene.add(pointLight, ambientLight);
+// var directionalLight3 = new THREE.DirectionalLight(0xffffff,  0.1);
+// directionalLight3.position.set(0, 2, 0);
 
 
+// var directionalLight4 = new THREE.DirectionalLight(0xffffff,  0.1);
+// directionalLight4.position.set(0, -2, -0.5);
 
+// var directionalLight5 = new THREE.DirectionalLight(0xffffff,  0.1);
+// directionalLight5.position.set(0, 0, 2);
+
+
+// var directionalLight7 = new THREE.DirectionalLight(0xffffff,  0.1);
+// directionalLight7.position.set(2, 2, -1);
+
+// var directionalLight8 = new THREE.DirectionalLight(0xffffff,  0.1);
+// directionalLight8.position.set(-2, 2, -1);
+
+// var directionalLight9 = new THREE.DirectionalLight(0xffffff,  0.1);
+// directionalLight9.position.set(-2, -2, -1);
+
+// var directionalLight10 = new THREE.DirectionalLight(0xffffff,  0.1);
+// directionalLight10.position.set(2, -2, -1);
+
+
+
+
+
+// // directionalLight1.distance = 100;
+// // directionalLight2.distance =100;
+// // directionalLight3.distance = 100;
+// // directionalLight4.distance = 100;
+// // directionalLight6.distance = 100;
+// // directionalLight7.distance = 100;
+// // directionalLight8.distance = 100;
+// // directionalLight9.distance = 100;
+// // directionalLight10.distance = 100;
+
+
+// // Add lights to the scene
+// scene.add(directionalLight1);
+// scene.add(directionalLight2);
+// scene.add(directionalLight3);
+// scene.add(directionalLight4);
+// scene.add(directionalLight5);
+// scene.add(directionalLight7);
+// scene.add(directionalLight8);
+// scene.add(directionalLight9);
+// scene.add(directionalLight10);
+
+// Create the lamp geometry
+var lampGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+var lampMaterial = new THREE.MeshStandardMaterial({
+  color: 0xffffff,
+  emissive: 0xffffff,
+  emissiveIntensity: 0.5,
+  metalness: 0.7,
+  roughness: 0.4,
+});
+var lampMesh = new THREE.Mesh(lampGeometry, lampMaterial);
+lampMesh.position.set(-2, 2, 1.5);
+
+// Add the point lights to the lamp mesh
+var pointLight1 = new THREE.PointLight(0xffffff, 5, 5);
+pointLight1.position.set(0, 0, 0);
+lampMesh.add(pointLight1);
+
+// Add the lamp mesh to the scene
+scene.add(lampMesh);
+
+
+
+// var pointLightHelper2 = new THREE.PointLightHelper(pointLight1, 5, 'red');
+// scene.add(pointLightHelper2);
+
+
+var pointLights = new THREE.PointLight(0xffffff, 2, 35);
+pointLights.position.set(0, 0, 0);
+
+//ambient light
+
+var ambientLight = new THREE.AmbientLight(0xffffff, 1.3);
+scene.add(ambientLight, pointLights);
+
+// var pointLightHelper2 = new THREE.PointLightHelper(pointLight1, 5, 'red');
+// scene.add(pointLightHelper2);
+
+
+
+
+//buat star
 function addStar() {
   var geometry = new THREE.SphereGeometry(0.25, 24, 24);
-  var material = new THREE.MeshStandardMaterial({ color: 0xffffff});
+  var material = new THREE.MeshStandardMaterial({ emmisive: 0xffffff });
   var star = new THREE.Mesh(geometry, material);
 
   var [x, y, z] = Array(3)
@@ -73,6 +191,7 @@ function addStar() {
   // Check if z value is between -50 and 50
 
   star.position.set(x, y, z);
+  objekDipilih.add(star);
   scene.add(star);
 }
 
@@ -80,34 +199,133 @@ Array(200).fill().forEach(addStar);
 
 // Background
 
-//var spaceTexture = new THREE.TextureLoader().load('space.jpg');
-//scene.background = spaceTexture;
+// var spaceTexture = new THREE.TextureLoader().load('space.jpg');
+// scene.background = spaceTexture;
+
+
+
 
 // Avatar
+// buat point light
+var pointLight = new THREE.PointLight(0xffffff, 4, 35);
+pointLight.position.set(0, 0, 30);
 
-var hanTexture = new THREE.TextureLoader().load('han.png');
-var han = new THREE.Mesh(new THREE.BoxGeometry( 2.5, 2.5, 2.5 ), new THREE.MeshBasicMaterial({ map: hanTexture }));
-// han.material.opacity =-1;
-// han.material.opacity =-1;
+// tambahkan point light ke dalam scene
+scene.add(pointLight);
+
+//buat geometry box
+const geometryHan = new THREE.BoxGeometry( 2.5, 2.5, 2.5 );
+
+// Load texture
+var textureLoader = new THREE.TextureLoader();
+var texture = textureLoader.load('han.png');
+
+var textureLoader = new THREE.TextureLoader();
+var texture2 = textureLoader.load('hansamping.png');
+
+var textureLoader = new THREE.TextureLoader();
+var texture3 = textureLoader.load('hanAtas.png');
+
+// Load normal map texture
+// var textureLoader = new THREE.TextureLoader();
+// var normalTexture = textureLoader.load('plastic.jpg');
+
+var textureLoader = new THREE.TextureLoader();
+var bMap = textureLoader.load('bMap.jpg');
+
+var textureLoader = new THREE.TextureLoader();
+var metalMap = textureLoader.load('metalic.png');
+
+var textureLoader = new THREE.TextureLoader();
+var roughMap = textureLoader.load('rough.png');
+
+// Create material
+var materialHan = [
+new THREE.MeshStandardMaterial({
+  bumpMap:bMap,
+  bumpScale: 0.07,
+  map: texture2,
+  roughnessMap:roughMap,
+  roughness: 0.4,
+  metalness: 0.6,
+  
+}),
+new THREE.MeshStandardMaterial({
+  bumpMap:bMap,
+  bumpScale: 0.07,
+  map: texture2,
+  roughnessMap:roughMap,
+  roughness: 0.4,
+  metalness: 0.6,
+  
+}),
+new THREE.MeshStandardMaterial({
+  bumpMap:bMap,
+  bumpScale: 0.07,
+  map: texture3,
+  roughnessMap:roughMap,
+  roughness: 0.4,
+  metalness: 0.6,
+  
+}),
+new THREE.MeshStandardMaterial({
+  bumpMap:bMap,
+  bumpScale: 0.07,
+  map: texture,
+  roughnessMap:roughMap,
+  roughness: 0.4,
+  metalness: 0.6,
+  
+}),
+new THREE.MeshStandardMaterial({
+  bumpMap:bMap,
+  bumpScale: 0.07,
+  map: texture,
+  roughnessMap:roughMap,
+  roughness: 0.4,
+  metalness: 0.6,
+  
+}),
+new THREE.MeshStandardMaterial({
+  bumpMap:bMap,
+  bumpScale: 0.07,
+  map: texture,
+  roughnessMap:roughMap,
+  roughness: 0.4,
+  metalness: 0.6,
+  
+}),
+];
+geometryHan.computeVertexNormals();
+
+var han = new THREE.Mesh(geometryHan, materialHan);
 scene.add(han);
 
 
+//card
 //nametag
-var alphaMap = new THREE.TextureLoader().load('card.png');
 var cardText = new THREE.TextureLoader().load('card.png');
-var alphaMap = new THREE.TextureLoader().load('card.png');
+var AlphaText = new THREE.TextureLoader().load('card.png');
 var cardMaterial = new THREE.MeshBasicMaterial({
     map: cardText,
-    alphaMap: alphaMap,
+    alphaMap:AlphaText,
     transparent: true,
-    opacity: 7
+    opacity: 4,
 });
 
-var card = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 3.5), cardMaterial);
+var card = new THREE.Mesh(new THREE.PlaneGeometry(3, 3.3), cardMaterial);
+
+
 // han.material.opacity =-1;
 // han.material.opacity =-1;
 scene.add(card);
-//text
+
+
+
+
+
+
+//text scene
 const loader = new FontLoader();
 
 loader.load('helvetiker_bold.typeface.json', function(font) {
@@ -136,22 +354,33 @@ loader.load('helvetiker_bold.typeface.json', function(font) {
     bevelSegments: 5,
   });
 
+  const geoLoading = new TextGeometry('Loading', {
+    font: font,
+    size: 1, // Ukuran font baru yang lebih kecil
+    height: 0,
+    curveSegments: 1,
+  });
 
 
+  //untuk loading
 
- const material = new THREE.MeshPhongMaterial({ 
+  const materialLoad = new THREE.MeshBasicMaterial({
+    color: 0x006666,
+  });
+    const loadingMesh = new THREE.Mesh(geoLoading, materialLoad);
+
+
+ const material = new THREE.MeshStandardMaterial({ 
   color: 0x006666, // Ubah menjadi warna biru
-  specular: 0x555555, 
-  shininess: 5, // Kurangi nilai shininess agar tidak terlalu mengkilap
-  roughness: 1 // Tambahkan properti roughness untuk membuat permukaan tampak kasar
+  metalness: 0.6,
+  roughness: 0
 });
   const textMesh = new THREE.Mesh(geometry, material);
 
-  const material2 = new THREE.MeshPhongMaterial({ 
+  const material2 = new THREE.MeshStandardMaterial({ 
     color: 0xCCCCCC, // Ubah menjadi warna ungu
-    specular: 0x555555, 
-    shininess: 5, // Kurangi nilai shininess agar tidak terlalu mengkilap
-    roughness: 1 // Tambahkan properti roughness untuk membuat permukaan tampak kasar
+    metalness: 0.6,
+    roughness: 0
   });
   
   const textMesh2 = new THREE.Mesh(geometry2, material2);
@@ -163,12 +392,31 @@ loader.load('helvetiker_bold.typeface.json', function(font) {
   scene.add(textMesh);
   scene.add(textMesh2);
 
+  //set loading
+  loadingMesh.position.set(-2.5, -0.5, 0);
+  loadingMesh.layers.set(1);
+  loadingMesh.layers.enable(1);
+  scene.add(loadingMesh);
+
 });
 
 
 
 
+//halaman loading content
+window.addEventListener('DOMContentLoaded', loading, false);
 
+//selesai loading 
+window.addEventListener('load', loadingDone, false);
+
+function loading(){
+  camera.layers.disable(1);
+  camera.layers.enable(0);
+}
+function loadingDone(){
+  camera.layers.disable(1);
+  camera.layers.enable(0);
+}
 
 
  //buat raycaster
@@ -196,7 +444,11 @@ loader.load('helvetiker_bold.typeface.json', function(font) {
   // Define hover color
   var hoverColor = new THREE.Color(0x6D6D6D);
   // Define original color
-  var originalColor = han.material.color.clone();
+  var originalColor = [];
+
+  for (var i = 0; i < materialHan.length; i++) {
+    originalColor[i] = materialHan[i].color.clone();
+  }
  // ketika hover 
 
 
@@ -225,6 +477,9 @@ window.addEventListener('load', onBukak, false);
 
  window.addEventListener('click', onClick, false);
 
+
+
+ 
  // Function for starting rotation animation on han mesh
 function startRotationAnimation() {
   animasiberjalan =true;
@@ -232,14 +487,19 @@ function startRotationAnimation() {
   let berhentiSejenak =0;
   let isAnimating = true;
 
+    var mat1 = new TWEEN.Tween(card.material)
+    .to({ opacity: 0 }, 500) // durasi animasi 500 ms
+    .easing(TWEEN.Easing.Quadratic.Out) // jenis animasi
+    .start(); // memulai animasi
+
   function rotate() {
     elapsedTime += 0.05;
 
 
     han.rotation.x += 0.03;
     camera.position.z +=0.2;
-    card.material.opacity -=0.2;
-    
+ 
+    // card.material.opacity -=0.2;
 
     if (elapsedTime < 5 && isAnimating) {
       //melakukan animasi untuk rotasi disini setTimeout berguna untuk melakukan 80 fps agar membatasi fps di semua device
@@ -268,7 +528,7 @@ function startRotationAnimation() {
                   elapsedTime += 0.05;
                   han.rotation.x -= 0.03;
                   camera.position.z -=0.2;
-                  card.material.opacity +=0.2;
+                  // card.material.opacity +=0.2;
 
                   if (elapsedTime < 5) {
                     //melakukan animasi untuk rotasi ke asal disini setTimeout berguna untuk melakukan 80 fps agar membatasi fps di semua device
@@ -291,31 +551,31 @@ function startRotationAnimation() {
   rotate();
 }
 
+//issue1
 
 //card1 adalah teks disamping
-
-var alphaMap1 = new THREE.TextureLoader().load('tekssamping.png');
 var cardText1 = new THREE.TextureLoader().load('tekssamping.png');
-var alphaMap1 = new THREE.TextureLoader().load('tekssamping.png');
+//var alphaMap1 = new THREE.TextureLoader().load('tekssamping.png');
 // membuat material
 var cardMaterial1 = new THREE.MeshBasicMaterial({
   map: cardText1,
-  alphaMap: alphaMap1,
+  //alphaMap: alphaMap1,
   transparent: true,
   opacity: 10,
-  depthTest: false, // non-aktifkan depth test agar selalu ditempatkan di depan
-  depthWrite: false // non-aktifkan depth write agar tidak mempengaruhi depth buffer
+  depthTest: true, // non-aktifkan depth test agar selalu ditempatkan di depan
+  depthWrite:true,
 });
 
-var card1 = new THREE.Mesh(new THREE.PlaneGeometry(8, 0.5), cardMaterial1);
+var card1 = new THREE.Mesh(new THREE.PlaneGeometry(8, 0.55), cardMaterial1);
 // han.material.opacity =-1;
 // han.material.opacity =-1;
 
 
-// mengatur properti renderOrder agar selalu dirender di depan objek lain
-card1.renderOrder = 999;
-scene.add(card1);
-
+scene2.add(card1);
+// cara pertama untuk merender ini didepan, tapi scene dibelakang mengalami post processing terhadap bloom
+//lebih lengkap di https://stackoverflow.com/questions/12666570/how-to-change-the-zorder-of-object-with-threejs/12666937#12666937
+// card1.renderOrder = 999;
+// card1.onBeforeRender = function( renderer ) { renderer.clearDepth(); };
 
 card1.rotation.z = -20.42;
 
@@ -425,13 +685,25 @@ x.addListener(myFunction);
 
 //buat durasi
 let j=0;
+let k=0;
 let cek=0;
 
-let k=0;
+
 
 var kondisiHanMuter=false;
 
 
+objekDipilih.add(han);
+objekDipilih.add(lampMesh);
+
+
+//untuk rotasi lampMesh
+// Inisialisasi variabel
+var radius = 2.6; // radius orbit
+var angle = 0; // sudut awal
+var speed = 0.01; // kecepatan rotasi
+
+var center = new THREE.Vector3(0, 0, 0); // pusat orbit
 
 // Animation Loop
 
@@ -446,6 +718,7 @@ setTimeout( function() {
 TWEEN.update();
 
 
+  //membuat tulisan samping selalu mengikuti camera
   card1.position.copy(camera.position);
   card1.position.z -= 10 * (scene.scale.z || 1);
   card1.position.y=0;
@@ -486,7 +759,9 @@ else if ((canvasWidth / canvasHeight >= 2.2)&&(canvasWidth / canvasHeight <= 2.4
       kondisiHanMuter = true;
       canvas.style.cursor = "pointer";
       // Start rotation animation
-      han.material.color.set(hoverColor);
+      for (var i = 0; i < materialHan.length; i++) {
+        materialHan[i].color.copy(hoverColor);
+      }
       han.rotation.y +=0.01;
       han.rotation.z +=0.01;
       cek+=0.5;
@@ -509,11 +784,13 @@ else if ((canvasWidth / canvasHeight >= 2.2)&&(canvasWidth / canvasHeight <= 2.4
         .start(); // memulai animasi
       }
 
-      han.material.color.set(originalColor);
+      for (var i = 0; i < materialHan.length; i++) {
+        materialHan[i].color.copy(originalColor[i]);
+      }
     }
    
 // disini
-  j++;k++;
+  j++;
   torus.rotation.x += 0.01;
   torus.rotation.y += 0.005;
   torus.rotation.z += 0.01;
@@ -522,19 +799,49 @@ else if ((canvasWidth / canvasHeight >= 2.2)&&(canvasWidth / canvasHeight <= 2.4
   torus2.rotation.y -= 0.01;
   torus2.rotation.z -= 0.01;
 
-  if(j<=100)
-    han.position.y +=0.01;
-  else
-    han.position.y -=0.01;
+ lampMesh.rotation.x -= 0.01;
+ lampMesh.rotation.y -= 0.01;
+ lampMesh.rotation.z -= 0.01;
+
+   // Perbarui sudut rotasi
+   angle += speed;
+
+   // Hitung posisi baru untuk lampMesh
+   var x = center.x + radius * Math.cos(angle);
+   var y = center.y + radius * Math.sin(angle);
+ 
+   // Perbarui posisi dan rotasi lampMesh
+   lampMesh.position.set(x, y, 1.2);
+
+//han naik turun
+  if(j<=100){ 
+    han.position.y +=0.01;}
+  else{
+    han.position.y -=0.01;}
   if(j==200)
     j=0;
 
-  if(k<=100)
-    card.material.opacity -=0.07;
-  else
-    card.material.opacity +=0.07;
-  if(k==200)
+
+//opacity card
+if(animasiberjalan==false){
+k++;
+  if(k<=100){
+      var mat1 = new TWEEN.Tween(card.material)
+      .to({ opacity: 1 }, 500) // durasi animasi 500 ms
+      .easing(TWEEN.Easing.Quadratic.Out) // jenis animasi
+      .start(); // memulai animasi
+  }
+  else{
+    var mat2 = new TWEEN.Tween(card.material)
+    .to({ opacity: 0 }, 300) // durasi animasi 500 ms
+    .easing(TWEEN.Easing.Quadratic.Out) // jenis animasi
+    .start(); // memulai animasi
+  }
+  if(k>=200)
     k=0;
+}
+    console.log(k)
+    
 
     var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
     vector.unproject(camera);
@@ -558,8 +865,14 @@ else if ((canvasWidth / canvasHeight >= 2.2)&&(canvasWidth / canvasHeight <= 2.4
         .start(); // memulai animasi
     }
 
+
   // controls.update();
-  renderer.render(scene, camera)
+
+  renderer.clear();
+  composer.render();
+  renderer.render( scene, camera );
+  renderer.clearDepth();
+  renderer.render( scene2, camera );
 }
 
 
