@@ -31,7 +31,8 @@ renderer.setClearColor(0x000000);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(origWidth, origHeight);
 camera.position.set(0, 0, 5);
-
+camera.layers.disable(0);
+camera.layers.enable(1);
 
  //terapkan library postprocessing
  const composer = new EffectComposer(renderer);
@@ -367,7 +368,15 @@ function configureMesh() {
 }
 
 
+function setSceneObjectsToLayer(layer) {
+  scene.traverse(function (object) {
+    if (object.isMesh) {
+      object.layers.set(layer);
+    }
+  });
+}
 
+setSceneObjectsToLayer(0);
 
 //text scene
 const loader = new FontLoader();
