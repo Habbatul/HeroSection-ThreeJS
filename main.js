@@ -190,9 +190,8 @@ function addStar() {
     .map(() => THREE.MathUtils.randFloatSpread(100));
 
   // Check if z value is between -50 and 50
-
-  star.position.set(x, y, z);
   objekDipilih.add(star);
+  star.position.set(x, y, z);
   scene.add(star);
 }
 
