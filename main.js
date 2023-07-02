@@ -798,9 +798,8 @@ window.addEventListener('scroll', handleScroll);
 // Animation Loop
 let clock = new THREE.Clock();
 let delta = 0;
-// 30 fps
+// 70 fps
 let interval = 1 / 70;
-
 
 
 function animate() {
