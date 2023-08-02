@@ -794,7 +794,7 @@ window.addEventListener('scroll', handleScroll);
 
 
 
-
+//pakek clok akan membatasi lebih  baik
 // Animation Loop
 let clock = new THREE.Clock();
 let delta = 0;
