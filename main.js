@@ -771,7 +771,7 @@ Array(160).fill().forEach(addStar);
 
 
 //kondisi menghentikan animasi ketika scroll
-let isSceneVisible = false; // Set awalnya ke false karena canvas terlihat
+let isSceneVisible = true; // Set awalnya ke false karena canvas terlihat
 
 function handleScroll() {
   const canvasElement = document.getElementById('canvas');
