@@ -5,7 +5,6 @@ import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import * as TWEEN from '@tweenjs/tween.js';
 import {  SelectiveBloomEffect, Selection, EffectComposer, EffectPass, RenderPass } from "postprocessing";
-import * as Stats from 'stats.js';
 // Setup
 const canvas = document.getElementById('canvas');
 const container = document.createElement('div');
@@ -36,11 +35,8 @@ camera.layers.disable(0);
 camera.layers.enable(1);
 
 
-// Buat instansi Stats
-const stats = new Stats();
 
-// Tempatkan stats pada pojok kiri atas
-document.body.appendChild(stats.dom);
+
 
  //terapkan library postprocessing
  const composer = new EffectComposer(renderer);
@@ -201,26 +197,26 @@ const geometryHan = new THREE.BoxGeometry( 2.5, 2.5, 2.5 );
 
 // Load texture
 var textureLoader = new THREE.TextureLoader();
-var texture = textureLoader.load('han.png');
+var texture = textureLoader.load('asset/han.png');
 
 var textureLoader = new THREE.TextureLoader();
-var texture2 = textureLoader.load('hansamping.png');
+var texture2 = textureLoader.load('asset/hansamping.png');
 
 var textureLoader = new THREE.TextureLoader();
-var texture3 = textureLoader.load('hanAtas.png');
+var texture3 = textureLoader.load('asset/hanAtas.png');
 
 // Load normal map texture
 // var textureLoader = new THREE.TextureLoader();
 // var normalTexture = textureLoader.load('plastic.jpg');
 
 var textureLoader = new THREE.TextureLoader();
-var bMap = textureLoader.load('bMap.jpg');
+var bMap = textureLoader.load('asset/bMap.jpg');
 
 var textureLoader = new THREE.TextureLoader();
-var metalMap = textureLoader.load('metalic.png');
+var metalMap = textureLoader.load('asset/metalic.png');
 
 var textureLoader = new THREE.TextureLoader();
-var roughMap = textureLoader.load('rough.png');
+var roughMap = textureLoader.load('asset/rough.png');
 
 // Create material
 var materialHan = [
@@ -307,7 +303,7 @@ scene.add(han);
 
 var mesh;
 const loader1 = new GLTFLoader();
-loader1.load( 'tulisan.gltf', function ( gltf ) {
+loader1.load( 'asset/tulisan.gltf', function ( gltf ) {
 
   // menambahkan model ke scene
   scene2.add( gltf.scene );
@@ -363,7 +359,7 @@ setSceneObjectsToLayer(0);
 //text scene
 const loader = new FontLoader();
 
-loader.load('helvetiker_bold.typeface.json', function(font) {
+loader.load('asset/helvetiker_bold.typeface.json', function(font) {
 
   const geometry = new TextGeometry('Welcome to', {
     font: font,
@@ -596,7 +592,7 @@ function startRotationAnimation() {
 //issue1
 
 //card1 adalah teks disamping
-var cardText1 = new THREE.TextureLoader().load('tekssamping.png');
+var cardText1 = new THREE.TextureLoader().load('asset/tekssamping.png');
 //var alphaMap1 = new THREE.TextureLoader().load('tekssamping.png');
 // membuat material
 var cardMaterial1 = new THREE.MeshBasicMaterial({
@@ -803,7 +799,6 @@ let interval = 1 / 70;
 
 
 function animate() {
-  stats.begin();
   // Logika update dan render
 
   requestAnimationFrame(animate);
@@ -983,7 +978,6 @@ k++;
       renderer.render( scene, camera );
       renderer.clearDepth();
       renderer.render( scene2, camera );
-      stats.end();
 
       delta = delta % interval;
   }
