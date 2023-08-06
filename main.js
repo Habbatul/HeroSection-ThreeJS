@@ -773,7 +773,24 @@ Array(160).fill().forEach(addStar);
 //kondisi menghentikan animasi ketika scroll
 let isSceneVisible = false; // Set awalnya ke false karena canvas terlihat
 
+function handleScroll() {
+  const canvasElement = document.getElementById('canvas');
+  const rect = canvasElement.getBoundingClientRect();
 
+  // Menentukan apakah elemen canvas ada di luar viewport
+  if (
+    rect.bottom <= 0 ||
+    rect.top >= window.innerHeight ||
+    rect.right <= 0 ||
+    rect.left >= window.innerWidth
+  ) {
+    isSceneVisible = true;
+  } else {
+    isSceneVisible = false;
+  }
+}
+
+window.addEventListener('scroll', handleScroll);
 
 
 
