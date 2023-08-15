@@ -811,7 +811,6 @@ function animate() {
 
 if (!isSceneVisible) {
 TWEEN.update();
-
   //membuat tulisan samping selalu mengikuti camera
   card1.position.copy(camera.position);
   card1.position.z -= 10 * (scene.scale.z || 1);
