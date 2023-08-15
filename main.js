@@ -5,6 +5,7 @@ import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import * as TWEEN from '@tweenjs/tween.js';
 import {  SelectiveBloomEffect, Selection, EffectComposer, EffectPass, RenderPass } from "postprocessing";
+import * as Stats from 'stats.js';
 // Setup
 const canvas = document.getElementById('canvas');
 const container = document.createElement('div');
@@ -34,12 +35,19 @@ camera.position.set(0, 0, 5);
 camera.layers.disable(0);
 camera.layers.enable(1);
 
+
+// Buat instansi Stats
+const stats = new Stats();
+
+// Tempatkan stats pada pojok kiri atas
+document.body.appendChild(stats.dom);
+
  //terapkan library postprocessing
  const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
 
 //tadinya pakek bloomEffect tapi karena kita akan menambahkan lampu, avatar dan juga bintang maka memakai selective
-const bloomEffect = new SelectiveBloomEffect(scene,camera,{
+const bloomEffect = new SelectiveBloomEffect(scene, camera, {
   mipmapBlur:true,
   radius:0.6,
   intensity:3.4,
@@ -47,13 +55,9 @@ const bloomEffect = new SelectiveBloomEffect(scene,camera,{
   luminanceThreshold:0.3
 });
 
-
 composer.addPass(new EffectPass(camera, bloomEffect));
 
-
-//gunakan class Selection dari postprocessing untuk memilih objek
-var objekDipilih = new Selection();
-
+var objekDipilih = new Selection;
 bloomEffect.selection = objekDipilih;
 
 
@@ -75,7 +79,6 @@ var geometry2 = new THREE.TorusGeometry(12, 0.7, 16, 30);
 var material2 = new THREE.MeshStandardMaterial({ 
   color: 0x006655,
   metalness: 0.5,
-  reflectivity:0.6,
   roughness: 0
  });
 var torus2 = new THREE.Mesh(geometry2, material2);
@@ -160,7 +163,6 @@ lampMesh.add(pointLight1);
 scene.add(lampMesh);
 
 
-
 // var pointLightHelper2 = new THREE.PointLightHelper(pointLight1, 5, 'red');
 // scene.add(pointLightHelper2);
 
@@ -171,31 +173,12 @@ pointLights.position.set(0, 0, 0);
 //ambient light
 
 var ambientLight = new THREE.AmbientLight(0xffffff, 1.3);
+var ambientLight2 = new THREE.AmbientLight(0xffffff, 1.3);
 scene.add(ambientLight, pointLights);
-
+scene2.add(ambientLight2);
 // var pointLightHelper2 = new THREE.PointLightHelper(pointLight1, 5, 'red');
 // scene.add(pointLightHelper2);
 
-
-
-
-//buat star
-function addStar() {
-  var geometry = new THREE.SphereGeometry(0.25, 24, 24);
-  var material = new THREE.MeshStandardMaterial({ emmisive: 0xffffff });
-  var star = new THREE.Mesh(geometry, material);
-
-  var [x, y, z] = Array(3)
-    .fill()
-    .map(() => THREE.MathUtils.randFloatSpread(100));
-
-  // Check if z value is between -50 and 50
-  objekDipilih.add(star);
-  star.position.set(x, y, z);
-  scene.add(star);
-}
-
-Array(200).fill().forEach(addStar);
 
 // Background
 
@@ -327,7 +310,7 @@ const loader1 = new GLTFLoader();
 loader1.load( 'tulisan.gltf', function ( gltf ) {
 
   // menambahkan model ke scene
-  scene.add( gltf.scene );
+  scene2.add( gltf.scene );
 
   // mengatur rotasi mesh setelah model dimuat
   mesh = gltf.scene.getObjectByName( 'Curve' );
@@ -752,8 +735,6 @@ let cek=0;
 var kondisiHanMuter=false;
 
 
-objekDipilih.add(han);
-objekDipilih.add(lampMesh);
 
 
 //untuk rotasi lampMesh
@@ -764,18 +745,73 @@ var speed = 0.01; // kecepatan rotasi
 
 var center = new THREE.Vector3(0, 0, 0); // pusat orbit
 
+objekDipilih.add(han);
+objekDipilih.add(lampMesh);
+
+
+
+
+
+function addStar() {
+  var geometry = new THREE.SphereGeometry(0.25, 24, 24);
+  var material = new THREE.MeshStandardMaterial({ emmisive: 0xffffff });
+  var star = new THREE.Mesh(geometry, material);
+
+  var [x, y, z] = Array(3)
+    .fill()
+    .map(() => THREE.MathUtils.randFloatSpread(100));
+
+  // Check if z value is between -50 and 50
+  star.position.set(x, y, z);
+  objekDipilih.add(star);
+  scene.add(star);
+}
+
+Array(160).fill().forEach(addStar);
+
+
+//kondisi menghentikan animasi ketika scroll
+let isSceneVisible = false; // Set awalnya ke false karena canvas terlihat
+
+function handleScroll() {
+  const canvasElement = document.getElementById('canvas');
+  const rect = canvasElement.getBoundingClientRect();
+
+  // Menentukan apakah elemen canvas ada di luar viewport
+  if (
+    rect.bottom <= 0 ||
+    rect.top >= window.innerHeight ||
+    rect.right <= 0 ||
+    rect.left >= window.innerWidth
+  ) {
+    isSceneVisible = true;
+  } else {
+    isSceneVisible = false;
+  }
+}
+
+window.addEventListener('scroll', handleScroll);
+
+
+
+
 // Animation Loop
+let clock = new THREE.Clock();
+let delta = 0;
+// 30 fps
+let interval = 1 / 70;
+
+
 
 function animate() {
+  stats.begin();
+  // Logika update dan render
 
-//animasi yang dilakukan,, disini setTimeout berguna untuk melakukan 80 fps agar membatasi fps di semua device
-setTimeout( function() {
-  requestAnimationFrame( animate );
-}, 1000/80 );
+  requestAnimationFrame(animate);
 
-//untuk animasi tween agar gerakan perlahan smooth, lembut banget kek anu
+
+if (!isSceneVisible) {
 TWEEN.update();
-
 
   //membuat tulisan samping selalu mengikuti camera
   card1.position.copy(camera.position);
@@ -913,7 +949,7 @@ k++;
   if(k>=200)
     k=0;
 }
-    console.log(k)
+   
     
 
     var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
@@ -940,12 +976,21 @@ k++;
 
 
   // controls.update();
+  delta += clock.getDelta();
 
-  renderer.clear();
-  composer.render();
-  renderer.render( scene, camera );
-  renderer.clearDepth();
-  renderer.render( scene2, camera );
+  if (delta  > interval) {
+      // The draw or time dependent code are here
+      renderer.clear();
+      composer.render();
+      renderer.render( scene, camera );
+      renderer.clearDepth();
+      renderer.render( scene2, camera );
+      stats.end();
+
+      delta = delta % interval;
+  }
+
+  }
 }
 
 
