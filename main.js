@@ -5,6 +5,13 @@ import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import * as TWEEN from '@tweenjs/tween.js';
 import {  SelectiveBloomEffect, Selection, EffectComposer, EffectPass, RenderPass } from "postprocessing";
+import * as Stats from 'stats.js'
+
+var stats = new Stats();
+stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+document.body.appendChild( stats.dom );
+
+
 // Setup
 const canvas = document.getElementById('canvas');
 const container = document.createElement('div');
@@ -541,9 +548,8 @@ function startRotationAnimation() {
 
     if (elapsedTime < 5 && isAnimating) {
       //melakukan animasi untuk rotasi disini setTimeout berguna untuk melakukan 80 fps agar membatasi fps di semua device
-      setTimeout( function() {
         requestAnimationFrame(rotate);
-      }, 1000/80 );
+
       
     } 
     else if (elapsedTime >= 3 && isAnimating) {
@@ -555,14 +561,12 @@ function startRotationAnimation() {
         
               if (berhentiSejenak < 5) {
                 //melakukan animasi untuk berhenti sejenak disini setTimeout berguna untuk melakukan 80 fps agar membatasi fps di semua device
-                setTimeout( function() {
                   requestAnimationFrame(berhenti);
-                }, 1000/80 );
-
               } 
               else {
 
                 function rotateBack() {
+                  
                   elapsedTime += 0.05;
                   han.rotation.x -= 0.03;
                   camera.position.z -=0.2;
@@ -570,9 +574,7 @@ function startRotationAnimation() {
 
                   if (elapsedTime < 5) {
                     //melakukan animasi untuk rotasi ke asal disini setTimeout berguna untuk melakukan 80 fps agar membatasi fps di semua device
-                    setTimeout( function() {
                       requestAnimationFrame(rotateBack);
-                    }, 1000/80 );
                   } else {
                     isAnimating = true;
                     elapsedTime = 0;
@@ -795,16 +797,16 @@ window.addEventListener('scroll', handleScroll);
 let clock = new THREE.Clock();
 let delta = 0;
 // 70 fps
-let interval = 1 / 70;
+let interval = 1 / 60;
 
 
 function animate() {
+  
   // Logika update dan render
 
   requestAnimationFrame(animate);
+  if (!isSceneVisible) {
 
-
-if (!isSceneVisible) {
 TWEEN.update();
   //membuat tulisan samping selalu mengikuti camera
   card1.position.copy(camera.position);
@@ -973,6 +975,7 @@ k++;
 
   if (delta  > interval) {
       // The draw or time dependent code are here
+      stats.begin();
       renderer.clear();
       composer.render();
       renderer.render( scene, camera );
@@ -980,11 +983,13 @@ k++;
       renderer.render( scene2, camera );
 
       delta = delta % interval;
+      stats.end();
   }
 
   }
+
+  
 }
-
 
 
 animate();
