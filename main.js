@@ -119,6 +119,7 @@ scene.add(torus2);
 
 // var directionalLight10 = new THREE.DirectionalLight(0xffffff,  0.1);
 // directionalLight10.position.set(2, -2, -1);
+// Membuat objek mesh pada z = 0
 
 
 
@@ -735,7 +736,6 @@ var kondisiHanMuter=false;
 
 
 
-
 //untuk rotasi lampMesh
 // Inisialisasi variabel
 var radius = 2.6; // radius orbit
@@ -746,6 +746,7 @@ var center = new THREE.Vector3(0, 0, 0); // pusat orbit
 
 objekDipilih.add(han);
 objekDipilih.add(lampMesh);
+
 
 
 
@@ -778,6 +779,9 @@ function addStar() {
 Array(numStars).fill().forEach(addStar);
 
 
+
+
+
 //kondisi menghentikan animasi ketika scroll
 let isSceneVisible = false; // Set awalnya ke false karena canvas terlihat
 
@@ -800,8 +804,6 @@ function handleScroll() {
 
 window.addEventListener('scroll', handleScroll);
 
-
-
 //pakek clok akan membatasi lebih  baik
 // Animation Loop
 let clock = new THREE.Clock();
@@ -810,12 +812,20 @@ let delta = 0;
 let interval = 1 / 60;
 
 
+
+
+
+
+
+
 function animate() {
   
   // Logika update dan render
 
   requestAnimationFrame(animate);
   if (!isSceneVisible) {
+      delta += clock.getDelta();
+   
 
 TWEEN.update();
   //membuat tulisan samping selalu mengikuti camera
@@ -846,7 +856,7 @@ else if ((canvasWidth / canvasHeight >= 2.2)&&(canvasWidth / canvasHeight <= 2.4
 } else {
   card1.position.x = -10;
 }
-
+if (delta  > interval) {
   //disini adalah logic untuk hover dari han
     // Update raycaster
     raycaster.setFromCamera(mouse, camera);
@@ -914,11 +924,11 @@ else if ((canvasWidth / canvasHeight >= 2.2)&&(canvasWidth / canvasHeight <= 2.4
    lampMesh.position.set(x, y, 1.2);
 
 //han naik turun
-  if(j<=100){ 
-    han.position.y +=0.01;}
+  if(j<=70){ 
+    han.position.y +=0.015;}
   else{
-    han.position.y -=0.01;}
-  if(j==200)
+    han.position.y -=0.015;}
+  if(j>=140)
     j=0;
 
 
@@ -997,9 +1007,9 @@ k++;
      //disini akhir animasi untuk bintang (random)
 
   // controls.update();
-  delta += clock.getDelta();
 
-  if (delta  > interval) {
+
+}
     
       // The draw or time dependent code are here
       stats.begin();
@@ -1011,7 +1021,7 @@ k++;
 
       delta = delta % interval;
       stats.end();
-  }
+
 
   }
 
