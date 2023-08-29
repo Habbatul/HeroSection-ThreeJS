@@ -764,7 +764,7 @@ function addStar() {
 
   const x = Math.max(Math.min(THREE.MathUtils.randFloatSpread(150), 60), -60); // Koordinat x antara -20 dan 100
   const y =  Math.max(Math.min(THREE.MathUtils.randFloatSpread(150), 60), -60); // Koordinat y antara -5 dan 100
-  const z = Math.max(Math.min(THREE.MathUtils.randFloatSpread(100), -3), -100); // Koordinat z antara -100 dan 0
+  const z = Math.max(Math.min(THREE.MathUtils.randFloatSpread(100), -7), -100); // Koordinat z antara -100 dan 0
   
   star.position.set(x,  y, z);
 
@@ -931,11 +931,11 @@ if (delta  > interval) {
   if(j>=140)
     j=0;
 
-
+  }
 //opacity card
 if(animasiberjalan==false){
 k++;
-  if(k<=100){
+  if(k<=300){
       // var mat1 = new TWEEN.Tween(card.material)
       // .to({ opacity: 1 }, 500) // durasi animasi 500 ms
       // .easing(TWEEN.Easing.Quadratic.Out) // jenis animasi
@@ -961,7 +961,7 @@ k++;
       .start(); // memulai animasi
       }
   }
-  if(k>=200)
+  if(k>=600)
     k=0;
 }
    
@@ -989,7 +989,7 @@ k++;
     }
 
 
-
+    if (delta  > interval) {
 
 
     //disini animasi untuk bintang (random)
